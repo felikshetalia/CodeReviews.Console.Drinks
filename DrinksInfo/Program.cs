@@ -18,6 +18,12 @@ class Program
             config["DrinksDB:ApiKey"]
             ?? throw new InvalidOperationException(
                 "DrinksDB:ApiKey is missing.");
+
+        IAppView appview = new AppView();
+
+        AppController mainApp = new(appview);
+
+        mainApp.Run();
     }
 
     private static IConfigurationRoot Setup()
