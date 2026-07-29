@@ -29,7 +29,7 @@ public class AppView : IAppView
         return option switch
         {
             MainMenuOption.DisplayCategories => "Display drinks menu",
-            MainMenuOption.Favorites => "Go to your favoutite drinks",
+            MainMenuOption.Favorites => "Go to your favorite drinks",
             MainMenuOption.Exit => "Exit",
             _ => option.ToString()
         };
