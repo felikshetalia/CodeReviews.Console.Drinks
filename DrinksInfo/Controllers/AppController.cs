@@ -3,10 +3,12 @@ namespace CodeReviews.Console.Drinks;
 public sealed class AppController
 {
     private readonly IAppView _appView;
+    private readonly DrinksController _drinkController;
 
-    public AppController(IAppView _view)
+    public AppController(IAppView view, DrinksController drinkController)
     {
-        _appView = _view;
+        _appView = view;
+        _drinkController = drinkController;
     }
 
     public void Run()
@@ -20,13 +22,11 @@ public sealed class AppController
             switch (selectedOption)
             {
                 case MainMenuOption.DisplayCategories:
-                    _appView.DisplayMessage("Display categories here");
-                    _appView.WaitForInput();
+                    _drinkController.ShowCategories();
                     break;
 
                 case MainMenuOption.Favorites:
                     _appView.DisplayMessage("Display favourites here");
-                    _appView.WaitForInput();
                     break;
 
                 case MainMenuOption.Exit:

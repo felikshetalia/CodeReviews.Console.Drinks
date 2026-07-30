@@ -20,8 +20,10 @@ class Program
                 "DrinksDB:ApiKey is missing.");
 
         IAppView appview = new AppView();
+        IDrinksView drinksView = new DrinksView();
 
-        AppController mainApp = new(appview);
+        DrinksController drinksController = new(drinksView);
+        AppController mainApp = new(appview, drinksController);
 
         mainApp.Run();
     }
