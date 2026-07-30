@@ -19,10 +19,18 @@ class Program
             ?? throw new InvalidOperationException(
                 "DrinksDB:ApiKey is missing.");
 
+        var httpClient = new HttpClient
+        {
+            BaseAddress = new Uri($"{baseUrl.TrimEnd('/')}/{apiKey.Trim('/')}/"),
+            Timeout = TimeSpan.FromSeconds(15)
+        };
+
         IAppView appview = new AppView();
         IDrinksView drinksView = new DrinksView();
 
-        DrinksController drinksController = new(drinksView);
+        IDrinksService drinksService = new DrinksService(httpClient);
+
+        DrinksController drinksController = new(drinksView, drinksService);
         AppController mainApp = new(appview, drinksController);
 
         mainApp.Run();
