@@ -26,6 +26,8 @@ public class DrinksView : IDrinksView
 
     public void DisplayDrinkDetails(DrinkDetails drink)
     {
+        AnsiConsole.Clear();
+
         var table = new Table()
             .Border(TableBorder.Rounded)
             .AddColumns("attribute", "info")

@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace CodeReviews.Console.Drinks;
 
 public sealed class DrinksController
@@ -26,6 +24,16 @@ public sealed class DrinksController
     {
         IReadOnlyCollection<DrinkRecord> drinksList = await _drinksService.GetDrinksListAsync(category);
         _drinksView.DisplayDrinks(drinksList);
-        _drinksView.GetDrinkId();
+        string id = _drinksView.GetDrinkId();
+        await ShowDrinkDetails(id);
+    }
+
+    public async Task ShowDrinkDetails(string drinkId)
+    {
+        DrinkDetails? details = await _drinksService.GetDrinkDetailsAsync(drinkId);
+        if (details == null) return;
+
+        _drinksView.DisplayDrinkDetails(details);
+        _drinksView.WaitForInput();
     }
 }

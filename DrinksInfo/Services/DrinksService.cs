@@ -20,7 +20,32 @@ public sealed class DrinksService : IDrinksService
 
     public async Task<DrinkDetails?> GetDrinkDetailsAsync(string drinkId)
     {
-        throw new NotImplementedException();
+        string postfix = $"lookup.php?i={drinkId}";
+        DrinkDetailsWrapper? response = await _httpClient.GetFromJsonAsync<DrinkDetailsWrapper>(postfix);
+        DrinkDetailsResponse? dto = response?.Drinks?.FirstOrDefault();
+
+        if (dto == null) return null;
+
+        if (!int.TryParse(dto.Id, out int id) ||
+            string.IsNullOrWhiteSpace(dto.Name) ||
+            string.IsNullOrWhiteSpace(dto.Category))
+        {
+            return null;
+        }
+
+        return new DrinkDetails
+        {
+            Id = id,
+            Name = dto.Name.Trim(),
+            Category = new DrinkCategory
+            {
+                CategoryName = dto.Category.Trim()
+            },
+            Alcoholic = string.Equals(dto.Alcoholic, "Alcoholic", StringComparison.OrdinalIgnoreCase),
+            Glass = Normalize(dto.Glass),
+            Instructions = Normalize(dto.Instructions),
+            Ingredients = MapIngredients(dto)
+        };
     }
 
     public async Task<IReadOnlyCollection<DrinkRecord>> GetDrinksListAsync(string category)
@@ -40,4 +65,67 @@ public sealed class DrinksService : IDrinksService
                     ImageURL = drink.ImageURL
                 }).ToList() ?? [];
     }
+
+    private static IReadOnlyList<Ingredient> MapIngredients(DrinkDetailsResponse dto)
+    {
+        string?[] items =
+        [
+            dto.Ingredient1,
+            dto.Ingredient2,
+            dto.Ingredient3,
+            dto.Ingredient4,
+            dto.Ingredient5,
+            dto.Ingredient6,
+            dto.Ingredient7,
+            dto.Ingredient8,
+            dto.Ingredient9,
+            dto.Ingredient10,
+            dto.Ingredient11,
+            dto.Ingredient12,
+            dto.Ingredient13,
+            dto.Ingredient14,
+            dto.Ingredient15
+        ];
+
+        string?[] measures =
+        [
+            dto.Measure1,
+            dto.Measure2,
+            dto.Measure3,
+            dto.Measure4,
+            dto.Measure5,
+            dto.Measure6,
+            dto.Measure7,
+            dto.Measure8,
+            dto.Measure9,
+            dto.Measure10,
+            dto.Measure11,
+            dto.Measure12,
+            dto.Measure13,
+            dto.Measure14,
+            dto.Measure15
+        ];
+
+        var ingredients = new List<Ingredient>(items.Length);
+
+        for (int i = 0; i < items.Length; i++)
+        {
+            if (string.IsNullOrWhiteSpace(items[i]))
+            {
+                continue;
+            }
+
+            ingredients.Add(new Ingredient
+            {
+                Item = items[i]!.Trim(),
+                Measure = Normalize(measures[i]),
+                Unit = null
+            });
+        }
+
+        return ingredients;
+    }
+
+    private static string? Normalize(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 }
