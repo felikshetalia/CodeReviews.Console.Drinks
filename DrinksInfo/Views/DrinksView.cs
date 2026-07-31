@@ -7,13 +7,6 @@ public class DrinksView : IDrinksView
     {
         AnsiConsole.Clear();
 
-        if (categories.Count == 0)
-        {
-            DisplayMessage("No categories found.");
-            WaitForInput();
-            return;
-        }
-
         var table = new Table().AddColumn("Category");
 
         foreach (var item in categories)
@@ -55,13 +48,6 @@ public class DrinksView : IDrinksView
     public void DisplayDrinks(IReadOnlyCollection<DrinkRecord> drinks)
     {
         AnsiConsole.Clear();
-
-        if (drinks.Count == 0)
-        {
-            DisplayMessage("No drinks found.");
-            WaitForInput();
-            return;
-        }
 
         var table = new Table().AddColumns("Id", "Name");
 
