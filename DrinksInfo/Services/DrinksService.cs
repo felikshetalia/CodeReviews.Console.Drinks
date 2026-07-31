@@ -9,7 +9,7 @@ public sealed class DrinksService : IDrinksService
     {
         const string postfix = "list.php?c=list";
         DrinkCategoriesResponse? response = await _httpClient.GetFromJsonAsync<DrinkCategoriesResponse>(postfix);
-        return response?.Drinks?
+        return response?.Categories?
                 .Where(category => !string.IsNullOrWhiteSpace(category.CategoryName))
                 .Select(category => new DrinkCategory
                 {
@@ -25,6 +25,19 @@ public sealed class DrinksService : IDrinksService
 
     public async Task<IReadOnlyCollection<DrinkRecord>> GetDrinksListAsync(string category)
     {
-        throw new NotImplementedException();
+        string filterValue = category.Trim().Replace(' ', '_');
+
+        string encodedCategory = Uri.EscapeDataString(filterValue);
+        string postfix = $"filter.php?c={encodedCategory}";
+
+        DrinksByCategoryResponse? response = await _httpClient.GetFromJsonAsync<DrinksByCategoryResponse>(postfix);
+        return response?.Drinks?
+                .Where(drink => !string.IsNullOrWhiteSpace(drink.Name))
+                .Select(drink => new DrinkRecord
+                {
+                    Id = drink.Id,
+                    Name = drink.Name,
+                    ImageURL = drink.ImageURL
+                }).ToList() ?? [];
     }
 }

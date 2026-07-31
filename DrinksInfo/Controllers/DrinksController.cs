@@ -18,5 +18,14 @@ public sealed class DrinksController
         _drinksView.DisplayCategories(
             await _drinksService.GetDrinkCategoriesAsync()
             );
+        string category = _drinksView.GetCategoryName();
+        await ShowDrinksByCategory(category);
+    }
+
+    public async Task ShowDrinksByCategory(string category)
+    {
+        IReadOnlyCollection<DrinkRecord> drinksList = await _drinksService.GetDrinksListAsync(category);
+        _drinksView.DisplayDrinks(drinksList);
+        _drinksView.GetDrinkId();
     }
 }

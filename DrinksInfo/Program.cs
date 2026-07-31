@@ -1,11 +1,12 @@
 ﻿using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 namespace CodeReviews.Console.Drinks;
 
 class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         var config = Setup();
 
@@ -33,7 +34,7 @@ class Program
         DrinksController drinksController = new(drinksView, drinksService);
         AppController mainApp = new(appview, drinksController);
 
-        mainApp.Run();
+        await mainApp.Run();
     }
 
     private static IConfigurationRoot Setup()

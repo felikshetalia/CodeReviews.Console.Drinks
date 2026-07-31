@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace CodeReviews.Console.Drinks;
 
 public sealed class AppController
@@ -11,7 +13,7 @@ public sealed class AppController
         _drinkController = drinkController;
     }
 
-    public void Run()
+    public async Task Run()
     {
         bool isRunning = true;
 
@@ -22,7 +24,7 @@ public sealed class AppController
             switch (selectedOption)
             {
                 case MainMenuOption.DisplayCategories:
-                    _drinkController.ShowCategories();
+                    await _drinkController.ShowCategories();
                     break;
 
                 case MainMenuOption.Favorites:
