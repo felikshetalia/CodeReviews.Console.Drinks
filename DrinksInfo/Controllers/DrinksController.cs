@@ -17,7 +17,10 @@ public sealed class DrinksController
     {
         try
         {
-            IReadOnlyCollection<DrinkCategory> categories = await _drinksService.GetDrinkCategoriesAsync();
+            IReadOnlyCollection<DrinkCategory> categories =
+                await _drinksView.ShowLoadingAsync("Loading categories...",
+                    () => _drinksService.GetDrinkCategoriesAsync());
+
             if (categories.Count == 0)
             {
                 _drinksView.DisplayError("No drink categories were returned.");
@@ -52,7 +55,10 @@ public sealed class DrinksController
 
     public async Task ShowDrinksByCategory(string category)
     {
-        IReadOnlyCollection<DrinkRecord> drinksList = await _drinksService.GetDrinksListAsync(category);
+        IReadOnlyCollection<DrinkRecord> drinksList =
+            await _drinksView.ShowLoadingAsync("Loading drinks...",
+                () => _drinksService.GetDrinksListAsync(category));
+
         _drinksView.DisplayDrinks(drinksList);
         string id = _drinksView.GetDrinkId();
         await ShowDrinkDetails(id);
@@ -60,7 +66,10 @@ public sealed class DrinksController
 
     public async Task ShowDrinkDetails(string drinkId)
     {
-        DrinkDetails? details = await _drinksService.GetDrinkDetailsAsync(drinkId);
+        DrinkDetails? details =
+            await _drinksView.ShowLoadingAsync("Loading...",
+                () => _drinksService.GetDrinkDetailsAsync(drinkId));
+
         if (details == null)
         {
             _drinksView.DisplayError($"No drink was found with ID '{drinkId}'.");

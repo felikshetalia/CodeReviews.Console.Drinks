@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 public interface IDrinksView
 {
     void DisplayCategories(IReadOnlyCollection<DrinkCategory> categories);
@@ -8,4 +10,5 @@ public interface IDrinksView
     void DisplayError(string message);
     void WaitForInput();
     void DisplayMessage(string message);
+    Task<T> ShowLoadingAsync<T>(string message, Func<Task<T>> op);
 }

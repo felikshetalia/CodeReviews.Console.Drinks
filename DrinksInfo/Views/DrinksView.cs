@@ -82,4 +82,7 @@ public class DrinksView : IDrinksView
         AnsiConsole.MarkupLine("\n[grey]Press any key to continue.[/]");
         AnsiConsole.Console.Input.ReadKey(true);
     }
+
+    public Task<T> ShowLoadingAsync<T>(string message, Func<Task<T>> op)
+        => AnsiConsole.Status().Spinner(Spinner.Known.Dots).StartAsync(message, _ => op());
 }
