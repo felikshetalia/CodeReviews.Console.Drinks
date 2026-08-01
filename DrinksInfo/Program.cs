@@ -1,6 +1,4 @@
-﻿using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 
 namespace CodeReviews.Console.Drinks;
 

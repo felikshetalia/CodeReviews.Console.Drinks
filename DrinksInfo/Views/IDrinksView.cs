@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 public interface IDrinksView
 {
     void DisplayCategories(IReadOnlyCollection<DrinkCategory> categories);

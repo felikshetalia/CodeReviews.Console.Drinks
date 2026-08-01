@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace CodeReviews.Console.Drinks;
 
 public sealed class AppController
