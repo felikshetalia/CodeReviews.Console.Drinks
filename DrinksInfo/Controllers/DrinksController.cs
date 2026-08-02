@@ -80,17 +80,27 @@ public sealed class DrinksController
         }
 
         _drinksView.DisplayDrinkDetails(details);
-        if (_drinksView.AskAddToFavourites() == "Add to favourites")
-            AddDrinkToFavourites(details);
+        if (_drinksView.AskAddToFavourites())
+            if (!AddDrinkToFavourites(details))
+                return;
     }
 
-    public void AddDrinkToFavourites(DrinkDetails drink)
-        => _favs.Add(new FavouriteDrink
+    public bool AddDrinkToFavourites(DrinkDetails drink)
+    {
+        if (_favs.Any(item => item.Id == drink.Id))
+        {
+            _drinksView.DisplayError("Item already exists in your favourites list");
+            return false;
+        }
+        _favs.Add(new FavouriteDrink
         {
             Id = drink.Id,
             Name = drink.Name,
             Category = drink.Category.CategoryName,
         });
+
+        return true;
+    }
 
     public void DisplayFavouriteDrinks()
     {
