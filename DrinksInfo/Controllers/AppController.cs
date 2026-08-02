@@ -26,7 +26,7 @@ public sealed class AppController
                     break;
 
                 case MainMenuOption.Favorites:
-                    _appView.DisplayMessage("Display favourites here");
+                    _drinkController.DisplayFavouriteDrinks();
                     break;
 
                 case MainMenuOption.Exit:

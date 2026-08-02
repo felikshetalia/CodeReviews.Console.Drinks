@@ -7,10 +7,13 @@ public sealed class DrinksController
     private readonly IDrinksView _drinksView;
     private readonly IDrinksService _drinksService;
 
+    private List<FavouriteDrink> _favs;
+
     public DrinksController(IDrinksView view, IDrinksService service)
     {
         _drinksView = view;
         _drinksService = service;
+        _favs = new();
     }
 
     public async Task ShowCategories()
@@ -77,6 +80,27 @@ public sealed class DrinksController
         }
 
         _drinksView.DisplayDrinkDetails(details);
+        if (_drinksView.AskAddToFavourites() == "Add to favourites")
+            AddDrinkToFavourites(details);
+    }
+
+    public void AddDrinkToFavourites(DrinkDetails drink)
+        => _favs.Add(new FavouriteDrink
+        {
+            Id = drink.Id,
+            Name = drink.Name,
+            Category = drink.Category.CategoryName,
+        });
+
+    public void DisplayFavouriteDrinks()
+    {
+        if (_favs.Count == 0)
+        {
+            _drinksView.DisplayMessage("No favourites to show");
+            _drinksView.WaitForInput();
+            return;
+        }
+        _drinksView.DisplayFavourites(_favs);
         _drinksView.WaitForInput();
     }
 }

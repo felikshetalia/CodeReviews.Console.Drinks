@@ -9,4 +9,6 @@ public interface IDrinksView
     void WaitForInput();
     void DisplayMessage(string message);
     Task<T> ShowLoadingAsync<T>(string message, Func<Task<T>> op);
+    string AskAddToFavourites();
+    void DisplayFavourites(List<FavouriteDrink> favs);
 }
