@@ -96,11 +96,30 @@ public sealed class DrinksController
             return;
         }
 
+        bool isFav = await _favsRepo.ContainsAsync(details.Id);
+
         _drinksView.DisplayDrinkDetails(details);
-        if (_drinksView.AskAddToFavourites())
+
+        FavouriteDrinkAction opt = _drinksView.AskFavouritesOption(isFav);
+
+        switch (opt)
         {
-            await AddDrinkToFavourites(details);
-            _drinksView.WaitForInput();
+            case FavouriteDrinkAction.Add:
+                await AddDrinkToFavourites(details);
+                break;
+
+            case FavouriteDrinkAction.Remove:
+                await RemoveDrinkFromFavourites(details.Id);
+                break;
+
+            case FavouriteDrinkAction.Back:
+                return;
+
+            default:
+                throw new ArgumentOutOfRangeException(
+                    nameof(opt),
+                    opt,
+                    "Unknown favourite action.");
         }
     }
 
@@ -120,7 +139,21 @@ public sealed class DrinksController
                 ? "Drink added to favourites."
                 : "This drink is already in your favourites.");
 
+        _drinksView.WaitForInput();
         return added;
+    }
+
+    public async Task<bool> RemoveDrinkFromFavourites(int id)
+    {
+        bool removed = await _favsRepo.RemoveAsync(id);
+
+        _drinksView.DisplayMessage(
+            removed
+                ? "Drink removed from favourites."
+                : "The drink was not found in favourites.");
+
+        _drinksView.WaitForInput();
+        return removed;
     }
 
     public async Task DisplayFavouriteDrinks()

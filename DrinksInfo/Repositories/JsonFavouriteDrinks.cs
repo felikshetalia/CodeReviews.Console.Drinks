@@ -17,6 +17,12 @@ public sealed class JsonFavouriteDrinks : IFavouriteDrinksRepository
         return true;
     }
 
+    public async Task<bool> ContainsAsync(int drinkId)
+    {
+        List<FavouriteDrink> favs = (await GetAllFavouritesAsync()).ToList();
+        return Validators.IsDuplicateFavourite(drinkId, favs);
+    }
+
     public async Task<IReadOnlyList<FavouriteDrink>> GetAllFavouritesAsync()
     {
         if (!File.Exists(_filePath))
@@ -31,6 +37,19 @@ public sealed class JsonFavouriteDrinks : IFavouriteDrinksRepository
 
             return favourites ?? [];
         }
+    }
+
+    public async Task<bool> RemoveAsync(int drinkId)
+    {
+        List<FavouriteDrink> favourites = (await GetAllFavouritesAsync()).ToList();
+
+        int removedCount = favourites.RemoveAll(fav => fav.Id == drinkId);
+
+        if (removedCount == 0)
+            return false;
+
+        await SaveAsync(favourites);
+        return true;
     }
 
     private async Task SaveAsync(IReadOnlyList<FavouriteDrink> favs)

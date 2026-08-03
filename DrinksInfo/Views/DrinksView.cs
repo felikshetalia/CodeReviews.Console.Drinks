@@ -86,8 +86,32 @@ public class DrinksView : IDrinksView
     public Task<T> ShowLoadingAsync<T>(string message, Func<Task<T>> op)
         => AnsiConsole.Status().Spinner(Spinner.Known.Dots).StartAsync(message, _ => op());
 
-    public bool AskAddToFavourites()
-        => AnsiConsole.Confirm("Add to favourites?");
+    public FavouriteDrinkAction AskFavouritesOption(bool isFav)
+    {
+        var choices = isFav
+        ? new[]
+        {
+            FavouriteDrinkAction.Remove,
+            FavouriteDrinkAction.Back
+        }
+        : new[]
+        {
+            FavouriteDrinkAction.Add,
+            FavouriteDrinkAction.Back
+        };
+
+        return AnsiConsole.Prompt(
+            new SelectionPrompt<FavouriteDrinkAction>()
+                .Title("What would you like to do?")
+                .AddChoices(choices)
+                .UseConverter(action => action switch
+                {
+                    FavouriteDrinkAction.Add => "Add to favourites",
+                    FavouriteDrinkAction.Remove => "Remove from favourites",
+                    FavouriteDrinkAction.Back => "Back",
+                    _ => action.ToString()
+                }));
+    }
 
     public void DisplayFavourites(IReadOnlyList<FavouriteDrink> favs)
     {

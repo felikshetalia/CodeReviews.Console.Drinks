@@ -41,8 +41,7 @@ public static class Validators
             return false;
         }
 
-        if (!int.TryParse(input.Trim(), out int drinkId) ||
-            drinkId <= 0)
+        if (!int.TryParse(input.Trim(), out int drinkId) || drinkId <= 0)
         {
             errorMessage = "The drink ID must be a positive number.";
             return false;
