@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Spectre.Console;
 
 namespace CodeReviews.Console.Drinks;
 
@@ -24,13 +25,9 @@ class Program
             Timeout = TimeSpan.FromSeconds(15)
         };
 
-        string applicationDataDirectory = Path.Combine(
-            Environment.GetFolderPath(
-            Environment.SpecialFolder.LocalApplicationData),
-        "DrinksInfo");
-
         string favouritesFilePath = Path.Combine(
-            applicationDataDirectory,
+            Directory.GetCurrentDirectory(),
+            "Data",
             "favourites.json");
 
         IFavouriteDrinksRepository favouritesRepository = new JsonFavouriteDrinks(favouritesFilePath);

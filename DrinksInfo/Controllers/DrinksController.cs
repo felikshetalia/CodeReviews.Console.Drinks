@@ -47,11 +47,12 @@ public sealed class DrinksController
         {
             _drinksView.DisplayError("The drinks API request timed out.");
         }
-        catch (JsonException)
+        catch (JsonException e)
         {
             _drinksView.DisplayError(
                 "The drinks API returned data " +
-                "in an unexpected format.");
+                "in an unexpected format." +
+                $"{e.Message}");
         }
     }
 
