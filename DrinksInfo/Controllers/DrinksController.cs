@@ -1,3 +1,4 @@
+using System.Reflection.Metadata;
 using System.Text.Json;
 
 namespace CodeReviews.Console.Drinks;
@@ -30,7 +31,12 @@ public sealed class DrinksController
             }
             _drinksView.DisplayCategories(categories);
             string category = _drinksView.GetCategoryName();
-            await ShowDrinksByCategory(category);
+            if (!Validators.TryResolveCategory(category, categories, out DrinkCategory? selectedCategory, out string? err))
+            {
+                _drinksView.DisplayError(err!);
+                return;
+            }
+            await ShowDrinksByCategory(selectedCategory!.CategoryName);
         }
         catch (HttpRequestException ex) when (ex.StatusCode.HasValue)
         {
@@ -62,9 +68,20 @@ public sealed class DrinksController
             await _drinksView.ShowLoadingAsync("Loading drinks...",
                 () => _drinksService.GetDrinksListAsync(category));
 
+        if (drinksList.Count == 0)
+        {
+            _drinksView.DisplayError($"No drinks were found in category '{category}'.");
+            return;
+        }
+
         _drinksView.DisplayDrinks(drinksList);
         string id = _drinksView.GetDrinkId();
-        await ShowDrinkDetails(id);
+        if (!Validators.TryResolveDrink(id, drinksList, out DrinkRecord? selectedDrink, out string? err))
+        {
+            _drinksView.DisplayError(err!);
+            return;
+        }
+        await ShowDrinkDetails(selectedDrink!.Id.ToString());
     }
 
     public async Task ShowDrinkDetails(string drinkId)

@@ -24,22 +24,16 @@ public sealed class DrinksService : IDrinksService
         DrinkDetailsWrapper? response = await _httpClient.GetFromJsonAsync<DrinkDetailsWrapper>(postfix);
         DrinkDetailsResponse? dto = response?.Drinks?.FirstOrDefault();
 
-        if (dto == null) return null;
-
-        if (!int.TryParse(dto.Id, out int id) ||
-            string.IsNullOrWhiteSpace(dto.Name) ||
-            string.IsNullOrWhiteSpace(dto.Category))
-        {
+        if (!Validators.TryValidateDrinkDetailsDto(dto, out int id))
             return null;
-        }
 
         return new DrinkDetails
         {
             Id = id,
-            Name = dto.Name.Trim(),
+            Name = dto!.Name!.Trim(),
             Category = new DrinkCategory
             {
-                CategoryName = dto.Category.Trim()
+                CategoryName = dto!.Category!.Trim()
             },
             Alcoholic = string.Equals(dto.Alcoholic, "Alcoholic", StringComparison.OrdinalIgnoreCase),
             Glass = Normalize(dto.Glass),

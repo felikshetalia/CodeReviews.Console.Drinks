@@ -9,7 +9,7 @@ public sealed class JsonFavouriteDrinks : IFavouriteDrinksRepository
     {
         List<FavouriteDrink> favs = (await GetAllFavouritesAsync()).ToList();
 
-        if (favs.Any(item => item.Id == drink.Id))
+        if (Validators.IsDuplicateFavourite(drink.Id, favs))
             return false;
 
         favs.Add(drink);
