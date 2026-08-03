@@ -30,7 +30,7 @@ public class DrinksView : IDrinksView
         table.AddRow("Name", Markup.Escape(drink.Name));
         table.AddRow("Category", Markup.Escape(drink.Category.CategoryName));
         table.AddRow("Alcohol", Markup.Escape(drink.Alcoholic ? "Alcoholic" : "Non alcoholic"));
-        table.AddRow("Glass", Markup.Escape(drink.Glass ?? ""));
+        AddOptionalRow(table, "Glass", drink.Glass);
 
         string ingredientsInfo = string.Join(
         Environment.NewLine,
@@ -39,8 +39,8 @@ public class DrinksView : IDrinksView
                 ? ingredient.Item
                 : $"{ingredient.Item} — {ingredient.Measure} {ingredient.Unit}"));
 
-        table.AddRow("Ingredients", Markup.Escape(ingredientsInfo));
-        table.AddRow("Instructions", Markup.Escape(drink.Instructions ?? ""));
+        AddOptionalRow(table, "Ingredients", ingredientsInfo);
+        AddOptionalRow(table, "Instructions", drink.Instructions);
 
         AnsiConsole.Write(table);
     }
@@ -129,5 +129,13 @@ public class DrinksView : IDrinksView
                 Markup.Escape(item.AddedAtUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm")));
 
         AnsiConsole.Write(table);
+    }
+
+    private static void AddOptionalRow(Table table, string attribute, string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return;
+
+        table.AddRow(Markup.Escape(attribute), Markup.Escape(value.Trim()));
     }
 }
