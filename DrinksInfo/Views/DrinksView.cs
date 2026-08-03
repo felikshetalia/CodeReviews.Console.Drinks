@@ -89,7 +89,7 @@ public class DrinksView : IDrinksView
     public bool AskAddToFavourites()
         => AnsiConsole.Confirm("Add to favourites?");
 
-    public void DisplayFavourites(List<FavouriteDrink> favs)
+    public void DisplayFavourites(IReadOnlyList<FavouriteDrink> favs)
     {
         AnsiConsole.Clear();
 

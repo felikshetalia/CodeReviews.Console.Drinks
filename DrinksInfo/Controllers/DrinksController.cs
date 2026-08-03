@@ -6,14 +6,13 @@ public sealed class DrinksController
 {
     private readonly IDrinksView _drinksView;
     private readonly IDrinksService _drinksService;
+    private readonly IFavouriteDrinksRepository _favsRepo;
 
-    private List<FavouriteDrink> _favs;
-
-    public DrinksController(IDrinksView view, IDrinksService service)
+    public DrinksController(IDrinksView view, IDrinksService service, IFavouriteDrinksRepository repo)
     {
         _drinksView = view;
         _drinksService = service;
-        _favs = new();
+        _favsRepo = repo;
     }
 
     public async Task ShowCategories()
@@ -81,36 +80,44 @@ public sealed class DrinksController
 
         _drinksView.DisplayDrinkDetails(details);
         if (_drinksView.AskAddToFavourites())
-            if (!AddDrinkToFavourites(details))
-                return;
-    }
-
-    public bool AddDrinkToFavourites(DrinkDetails drink)
-    {
-        if (_favs.Any(item => item.Id == drink.Id))
         {
-            _drinksView.DisplayError("Item already exists in your favourites list");
-            return false;
+            await AddDrinkToFavourites(details);
+            _drinksView.WaitForInput();
         }
-        _favs.Add(new FavouriteDrink
-        {
-            Id = drink.Id,
-            Name = drink.Name,
-            Category = drink.Category.CategoryName,
-        });
-
-        return true;
     }
 
-    public void DisplayFavouriteDrinks()
+    public async Task<bool> AddDrinkToFavourites(DrinkDetails drink)
     {
-        if (_favs.Count == 0)
+        bool added =
+            await _favsRepo.AddAsync(new FavouriteDrink
+            {
+                Id = drink.Id,
+                Name = drink.Name,
+                Category = drink.Category.CategoryName,
+                AddedAtUtc = DateTimeOffset.UtcNow
+            });
+
+        _drinksView.DisplayMessage(
+            added
+                ? "Drink added to favourites."
+                : "This drink is already in your favourites.");
+
+        return added;
+    }
+
+    public async Task DisplayFavouriteDrinks()
+    {
+        IReadOnlyList<FavouriteDrink> favs =
+        await _favsRepo.GetAllFavouritesAsync();
+
+        if (favs.Count == 0)
         {
-            _drinksView.DisplayMessage("No favourites to show");
+            _drinksView.DisplayMessage("You have no favourite drinks.");
             _drinksView.WaitForInput();
             return;
         }
-        _drinksView.DisplayFavourites(_favs);
+
+        _drinksView.DisplayFavourites(favs);
         _drinksView.WaitForInput();
     }
 }

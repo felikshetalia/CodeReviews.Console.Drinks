@@ -10,5 +10,5 @@ public interface IDrinksView
     void DisplayMessage(string message);
     Task<T> ShowLoadingAsync<T>(string message, Func<Task<T>> op);
     bool AskAddToFavourites();
-    void DisplayFavourites(List<FavouriteDrink> favs);
+    void DisplayFavourites(IReadOnlyList<FavouriteDrink> favs);
 }
